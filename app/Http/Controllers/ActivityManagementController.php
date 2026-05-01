@@ -33,16 +33,22 @@ class ActivityManagementController extends Controller
             'name'        => 'required|string|max:255',
             'icon'        => 'nullable|string|max:10',
             'description' => 'nullable|string',
+            'image'       => 'nullable|image|max:4096',
         ]);
 
         $order = Module::max('order') + 1;
 
-        $module = Module::create([
+        $imagePath = $request->hasFile('image')
+            ? $request->file('image')->store('module-images', 'public')
+            : null;
+
+        Module::create([
             'name'        => $request->name,
             'icon'        => $request->icon ?: '⚙',
             'description' => $request->description,
             'order'       => $order,
             'color'       => '#00e5ff',
+            'image'       => $imagePath,
         ]);
 
         return back()->with('success', 'Module created.');
@@ -68,7 +74,7 @@ class ActivityManagementController extends Controller
         $path = $request->file('image')->store('module-images', 'public');
         $module->update(['image' => $path]);
 
-        return response()->json(['url' => Storage::disk('public')->url($path)]);
+        return response()->json(['url' => asset('storage/' . $path)]);
     }
 
     // ---------- Activities ----------
@@ -77,23 +83,27 @@ class ActivityManagementController extends Controller
     {
         $request->validate([
             'name'             => 'required|string|max:255',
-            'icon'             => 'nullable|string|max:10',
             'description'      => 'nullable|string',
             'procedure'        => 'nullable|string',
             'safety_reminders' => 'nullable|string',
+            'image'            => 'nullable|image|max:4096',
         ]);
 
         $order = $module->activities()->max('order') + 1;
 
-        $activity = Activity::create([
+        $imagePath = $request->hasFile('image')
+            ? $request->file('image')->store('activity-images', 'public')
+            : null;
+
+        Activity::create([
             'module_id'        => $module->id,
             'name'             => $request->name,
-            'icon'             => $request->icon ?: '🔬',
             'description'      => $request->description,
             'procedure'        => $request->procedure,
             'safety_reminders' => $request->safety_reminders,
             'order'            => $order,
             'is_locked'        => true,
+            'image'            => $imagePath,
         ]);
 
         return back()->with('success', 'Activity created.');
@@ -119,7 +129,7 @@ class ActivityManagementController extends Controller
         $path = $request->file('image')->store('activity-images', 'public');
         $activity->update(['image' => $path]);
 
-        return response()->json(['url' => Storage::disk('public')->url($path)]);
+        return response()->json(['url' => asset('storage/' . $path)]);
     }
 
     public function update(Request $request, Activity $activity)

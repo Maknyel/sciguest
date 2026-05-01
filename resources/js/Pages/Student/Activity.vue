@@ -5,7 +5,7 @@
         <button class="back-btn" @click="$inertia.visit(`/student/module/${activity.module_id}`)">← Back</button>
       </div>
 
-      <h1 class="page-title">{{ activity.icon }} {{ activity.name }}</h1>
+      <h1 class="page-title">{{ activity.name }}</h1>
       <p class="module-label">Module {{ activity.module?.order }} – {{ activity.module?.name }}</p>
 
       <!-- Tabs -->

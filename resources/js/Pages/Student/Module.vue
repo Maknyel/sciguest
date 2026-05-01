@@ -22,7 +22,7 @@
 
           <div class="card-body">
             <span class="activity-badge">Activity {{ activity.order }}</span>
-            <h3 class="activity-name">{{ activity.icon }} {{ activity.name }}</h3>
+            <h3 class="activity-name">{{ activity.name }}</h3>
             <div class="status-row" v-if="!activity.is_locked">
               <span :class="['status', activity.activity_completed ? 'done' : 'pending']">
                 Activity: {{ activity.activity_completed ? 'Complete' : 'Incomplete' }}

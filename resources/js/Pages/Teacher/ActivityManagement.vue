@@ -24,9 +24,19 @@
             <label>Description</label>
             <textarea v-model="moduleForm.description" placeholder="Short description..." rows="2" />
           </div>
+          <div class="field">
+            <label>Cover Image</label>
+            <label class="img-upload-box">
+              <div v-if="modulePreview" class="img-preview" :style="{ backgroundImage: `url(${modulePreview})` }" />
+              <div v-else class="img-placeholder">🖼 Click to upload image</div>
+              <input type="file" accept="image/*" class="hidden-file" @change="onModuleImage" />
+            </label>
+          </div>
           <div class="form-actions">
             <button class="btn-cancel" @click="showModuleForm = false; resetModuleForm()">Cancel</button>
-            <button class="btn-save" @click="saveModule" :disabled="!moduleForm.name">✓ Create Module</button>
+            <button class="btn-save" @click="saveModule" :disabled="!moduleForm.name || moduleForm.processing">
+              {{ moduleForm.processing ? 'Creating…' : '✓ Create Module' }}
+            </button>
           </div>
         </div>
       </div>
@@ -51,15 +61,17 @@
         <!-- Add Activity Form (per module) -->
         <div v-if="addActivityFor === module.id" class="card activity-form-card">
           <h3>New Activity in Module {{ module.order }}</h3>
-          <div class="form-row">
-            <div class="field">
-              <label>Icon</label>
-              <input v-model="activityForm.icon" type="text" placeholder="🔬" maxlength="4" />
-            </div>
-            <div class="field flex-3">
-              <label>Activity Name *</label>
-              <input v-model="activityForm.name" type="text" placeholder="e.g. ROLL, ROLL AND AWAY!" />
-            </div>
+          <div class="field">
+            <label>Activity Name *</label>
+            <input v-model="activityForm.name" type="text" placeholder="e.g. ROLL, ROLL AND AWAY!" />
+          </div>
+          <div class="field">
+            <label>Cover Image</label>
+            <label class="img-upload-box">
+              <div v-if="activityPreview" class="img-preview" :style="{ backgroundImage: `url(${activityPreview})` }" />
+              <div v-else class="img-placeholder">🖼 Click to upload image</div>
+              <input type="file" accept="image/*" class="hidden-file" @change="onActivityImage" />
+            </label>
           </div>
           <div class="field">
             <label>Description</label>
@@ -75,7 +87,9 @@
           </div>
           <div class="form-actions">
             <button class="btn-cancel" @click="addActivityFor = null; resetActivityForm()">Cancel</button>
-            <button class="btn-save" @click="saveActivity(module.id)" :disabled="!activityForm.name">✓ Create Activity</button>
+            <button class="btn-save" @click="saveActivity(module.id)" :disabled="!activityForm.name || activityForm.processing">
+              {{ activityForm.processing ? 'Creating…' : '✓ Create Activity' }}
+            </button>
           </div>
         </div>
 
@@ -85,7 +99,7 @@
             <div class="activity-info">
               <div class="activity-name-row">
                 <div v-if="activity.image_url" class="activity-thumb" :style="{ backgroundImage: `url(${activity.image_url})` }" />
-                <p class="activity-name">{{ activity.icon }} {{ activity.name }}</p>
+                <p class="activity-name">{{ activity.name }}</p>
               </div>
               <div class="badges">
                 <span :class="['badge', activity.is_locked ? 'locked' : 'unlocked']">
@@ -178,7 +192,7 @@
 
 <script setup>
 import { ref, reactive } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { router, useForm } from '@inertiajs/vue3';
 import axios from 'axios';
 import TeacherLayout from '@/Layouts/TeacherLayout.vue';
 
@@ -190,13 +204,37 @@ const addActivityFor = ref(null);
 const quizOpenFor    = ref(null);
 const addQuestionFor = ref(null);
 
-// Forms
-const moduleForm = reactive({ name: '', icon: '', description: '' });
-const activityForm = reactive({ name: '', icon: '', description: '', procedure: '', safety_reminders: '' });
-const questionForm = reactive({ question: '', optionsText: '', correct_answer: '' });
+// Module form (useForm supports File objects)
+const moduleForm = useForm({ name: '', icon: '', description: '', image: null });
+const modulePreview = ref(null);
 
-function resetModuleForm()   { Object.assign(moduleForm,   { name: '', icon: '', description: '' }); }
-function resetActivityForm() { Object.assign(activityForm, { name: '', icon: '', description: '', procedure: '', safety_reminders: '' }); }
+function onModuleImage(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  moduleForm.image = file;
+  modulePreview.value = URL.createObjectURL(file);
+}
+function resetModuleForm() {
+  moduleForm.reset();
+  modulePreview.value = null;
+}
+
+// Activity form
+const activityForm = useForm({ name: '', description: '', procedure: '', safety_reminders: '', image: null });
+const activityPreview = ref(null);
+
+function onActivityImage(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  activityForm.image = file;
+  activityPreview.value = URL.createObjectURL(file);
+}
+function resetActivityForm() {
+  activityForm.reset();
+  activityPreview.value = null;
+}
+
+const questionForm = reactive({ question: '', optionsText: '', correct_answer: '' });
 function resetQuestionForm() { Object.assign(questionForm, { question: '', optionsText: '', correct_answer: '' }); }
 
 function toggleAddActivity(moduleId) {
@@ -213,7 +251,8 @@ function toggleAddQuestion(activityId) {
 
 // Module CRUD
 function saveModule() {
-  router.post('/teacher/activity-management/modules', { ...moduleForm }, {
+  moduleForm.post('/teacher/activity-management/modules', {
+    forceFormData: true,
     onSuccess: () => { showModuleForm.value = false; resetModuleForm(); },
   });
 }
@@ -225,7 +264,8 @@ function deleteModule(id) {
 
 // Activity CRUD
 function saveActivity(moduleId) {
-  router.post(`/teacher/activity-management/modules/${moduleId}/activities`, { ...activityForm }, {
+  activityForm.post(`/teacher/activity-management/modules/${moduleId}/activities`, {
+    forceFormData: true,
     onSuccess: () => { addActivityFor.value = null; resetActivityForm(); },
   });
 }
@@ -364,6 +404,19 @@ async function uploadActivityImage(activity, event) {
 .btn-cancel { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px 18px; color: #8090b0; cursor: pointer; font-size: 13px; }
 .btn-save { background: linear-gradient(90deg,#00e5ff,#00ff88); border: none; border-radius: 8px; padding: 8px 20px; color: #0a0f1e; font-weight: 700; cursor: pointer; font-size: 13px; }
 .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.img-upload-box {
+  display: block;
+  cursor: pointer;
+  border: 2px dashed rgba(0,229,255,0.25);
+  border-radius: 10px;
+  overflow: hidden;
+  height: 140px;
+  transition: border-color 0.2s;
+}
+.img-upload-box:hover { border-color: rgba(0,229,255,0.6); }
+.img-preview { width: 100%; height: 100%; background-size: cover; background-position: center; }
+.img-placeholder { height: 100%; display: flex; align-items: center; justify-content: center; color: #6070a0; font-size: 14px; }
 
 /* Module section */
 .module-section { margin-bottom: 36px; }
