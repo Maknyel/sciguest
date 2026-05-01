@@ -5,7 +5,7 @@
 
       <div class="modules-grid">
         <div v-for="module in modules" :key="module.id" class="module-card" @click="goToModule(module.id)">
-          <div class="card-bg" :style="{ background: moduleGradient(module.order) }">
+          <div class="card-bg" :style="module.image_url ? { backgroundImage: `url(${module.image_url})`, backgroundSize: 'cover', backgroundPosition: 'center' } : { background: moduleGradient(module.order) }">
             <div class="card-overlay" />
           </div>
           <div class="card-badge">Module {{ module.order }}</div>

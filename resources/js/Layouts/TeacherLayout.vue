@@ -27,6 +27,14 @@
           <span class="nav-icon">👥</span>
           <span v-if="!sidebarCollapsed">Account Management</span>
         </Link>
+        <Link href="/teacher/teacher-management" :class="['nav-item', isActive('/teacher/teacher-management') ? 'active' : '']">
+          <span class="nav-icon">👩‍🏫</span>
+          <span v-if="!sidebarCollapsed">Teacher Management</span>
+        </Link>
+        <Link href="/teacher/profile" :class="['nav-item', isActive('/teacher/profile') ? 'active' : '']">
+          <span class="nav-icon">⚙️</span>
+          <span v-if="!sidebarCollapsed">My Profile</span>
+        </Link>
       </nav>
     </aside>
 

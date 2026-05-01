@@ -14,7 +14,7 @@
           @click="!activity.is_locked && goToActivity(activity.id)">
 
           <div class="card-bg-wrap">
-            <div class="card-bg" :style="{ background: cardGradient(activity.order) }" />
+            <div class="card-bg" :style="activity.image_url ? { backgroundImage: `url(${activity.image_url})`, backgroundSize: 'cover', backgroundPosition: 'center' } : { background: cardGradient(activity.order) }" />
             <div class="card-overlay" />
           </div>
 

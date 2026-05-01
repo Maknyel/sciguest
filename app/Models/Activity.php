@@ -4,15 +4,23 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Activity extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'module_id', 'order', 'name', 'icon', 'description',
+        'module_id', 'order', 'name', 'icon', 'description', 'image',
         'procedure', 'safety_reminders', 'is_locked', 'deadline_enabled', 'deadline_at',
     ];
+
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->image ? Storage::disk('public')->url($this->image) : null;
+    }
 
     protected $casts = [
         'is_locked' => 'boolean',
