@@ -7,23 +7,23 @@
         <span v-if="!sidebarCollapsed" class="logo">SCIQUEST</span>
       </div>
       <nav class="sidebar-nav">
-        <Link :href="route('teacher.dashboard')" :class="['nav-item', isActive('/teacher/dashboard') ? 'active' : '']">
+        <Link href="/teacher/dashboard" :class="['nav-item', isActive('/teacher/dashboard') ? 'active' : '']">
           <span class="nav-icon">📋</span>
           <span v-if="!sidebarCollapsed">Dashboard</span>
         </Link>
-        <Link :href="route('teacher.notifications')" :class="['nav-item', isActive('/teacher/notifications') ? 'active' : '']">
+        <Link href="/teacher/notifications" :class="['nav-item', isActive('/teacher/notifications') ? 'active' : '']">
           <span class="nav-icon">🔔</span>
           <span v-if="!sidebarCollapsed">Notifications</span>
         </Link>
-        <Link :href="route('teacher.announcements')" :class="['nav-item', isActive('/teacher/announcements') ? 'active' : '']">
+        <Link href="/teacher/announcements" :class="['nav-item', isActive('/teacher/announcements') ? 'active' : '']">
           <span class="nav-icon">📢</span>
           <span v-if="!sidebarCollapsed">Announcements</span>
         </Link>
-        <Link :href="route('teacher.activity-management')" :class="['nav-item', isActive('/teacher/activity-management') ? 'active' : '']">
+        <Link href="/teacher/activity-management" :class="['nav-item', isActive('/teacher/activity-management') ? 'active' : '']">
           <span class="nav-icon">✏️</span>
           <span v-if="!sidebarCollapsed">Activity Management</span>
         </Link>
-        <Link :href="route('teacher.account-management')" :class="['nav-item', isActive('/teacher/account-management') ? 'active' : '']">
+        <Link href="/teacher/account-management" :class="['nav-item', isActive('/teacher/account-management') ? 'active' : '']">
           <span class="nav-icon">👥</span>
           <span v-if="!sidebarCollapsed">Account Management</span>
         </Link>
@@ -38,7 +38,7 @@
             <span class="user-name">{{ user?.full_name }}</span>
             <span>▾</span>
             <div v-if="userMenuOpen" class="dropdown">
-              <Link :href="route('logout')" method="post" as="button" class="dropdown-item logout">Logout</Link>
+              <Link href="/logout" method="post" as="button" class="dropdown-item logout">Logout</Link>
             </div>
           </div>
         </div>

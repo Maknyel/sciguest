@@ -9,15 +9,15 @@
         <span v-if="!sidebarCollapsed" class="logo">SCIQUEST</span>
       </div>
       <nav class="sidebar-nav">
-        <Link :href="route('student.dashboard')" :class="['nav-item', isActive('student.dashboard') ? 'active' : '']">
+        <Link href="/student/dashboard" :class="['nav-item', isActive('/student/dashboard') ? 'active' : '']">
           <span class="nav-icon">📋</span>
           <span v-if="!sidebarCollapsed" class="nav-label">Dashboard</span>
         </Link>
-        <Link :href="route('student.notifications')" :class="['nav-item', isActive('student.notifications') ? 'active' : '']">
+        <Link href="/student/notifications" :class="['nav-item', isActive('/student/notifications') ? 'active' : '']">
           <span class="nav-icon">🔔</span>
           <span v-if="!sidebarCollapsed" class="nav-label">Notifications</span>
         </Link>
-        <Link :href="route('student.history')" :class="['nav-item', isActive('student.history') ? 'active' : '']">
+        <Link href="/student/history" :class="['nav-item', isActive('/student/history') ? 'active' : '']">
           <span class="nav-icon">📖</span>
           <span v-if="!sidebarCollapsed" class="nav-label">History</span>
         </Link>
@@ -33,7 +33,7 @@
             <span class="user-name">{{ user?.full_name }}</span>
             <span class="chevron">▾</span>
             <div v-if="userMenuOpen" class="dropdown">
-              <Link :href="route('logout')" method="post" as="button" class="dropdown-item logout">Logout</Link>
+              <Link href="/logout" method="post" as="button" class="dropdown-item logout">Logout</Link>
             </div>
           </div>
         </div>
@@ -54,8 +54,8 @@ const props = defineProps({ user: Object });
 const sidebarCollapsed = ref(false);
 const userMenuOpen = ref(false);
 
-function isActive(routeName) {
-  return usePage().url.startsWith('/' + routeName.replace('student.', 'student/').replace('.', '/'));
+function isActive(path) {
+  return usePage().url.startsWith(path);
 }
 </script>
 
