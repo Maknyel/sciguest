@@ -11,3 +11,9 @@
         @inertia
     </body>
 </html>
+<style>
+    body{
+        margin: 0px;
+    }
+
+</style>
